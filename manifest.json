@@ -19,7 +19,7 @@
         "Auto text deduplication"
     ],
     "platforms": ["win64"],
-    "minLauncherVersion": "0.2.0",
+    "minLauncherVersion": "0.1.0",
     "settings": [
         {
             "key": "hookEnabled",

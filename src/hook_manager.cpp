@@ -82,6 +82,10 @@ void HookManager::setDeduplication(bool enabled) {
     m_dedup = enabled;
 }
 
+void HookManager::setHookFilter(const std::string& filter) {
+    m_hookFilter = filter;
+}
+
 // --- Private ---
 
 bool HookManager::injectDll(DWORD pid, const std::wstring& dllPath) {

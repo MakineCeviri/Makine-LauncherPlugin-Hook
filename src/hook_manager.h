@@ -24,6 +24,7 @@ public:
 
     void setMinTextLength(int len);
     void setDeduplication(bool enabled);
+    void setHookFilter(const std::string& filter);
 
 private:
     // DLL injection via CreateRemoteThread + LoadLibraryW
@@ -55,6 +56,7 @@ private:
 
     int m_minTextLen = 2;
     bool m_dedup = true;
+    std::string m_hookFilter = "all"; // "all", "textout", "drawtext", "glyph"
 };
 
 } // namespace texthook

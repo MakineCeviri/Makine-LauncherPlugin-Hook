@@ -3,7 +3,6 @@
 #include "settings.h"
 
 #include <string>
-#include <cstring>
 
 static texthook::HookManager g_hookMgr;
 static texthook::Settings g_settings;
@@ -15,6 +14,7 @@ static void syncSettingsToManager() {
     std::string minLen = g_settings.get("minTextLength", "2");
     g_hookMgr.setMinTextLength(std::atoi(minLen.c_str()));
     g_hookMgr.setDeduplication(g_settings.get("deduplication", "true") == "true");
+    g_hookMgr.setHookFilter(g_settings.get("hookFilter", "all"));
 }
 
 // --- Standard plugin ABI ---
@@ -88,6 +88,10 @@ extern "C" __declspec(dllexport)
 bool makineai_inject_process(DWORD pid) {
     if (!g_ready) {
         g_lastError = "Plugin not initialized";
+        return false;
+    }
+    if (g_settings.get("hookEnabled", "false") != "true") {
+        g_lastError = "Hook is disabled in settings";
         return false;
     }
     if (pid == 0) {
