@@ -1,12 +1,12 @@
 /**
  * @file rpa_archive.cpp
  * @brief Ren'Py RPA archive parser implementation
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #include "renpy_rpa.hpp"
 #include "pickle_reader.hpp"
-#include "makineai/logging.hpp"
+#include "makine/logging.hpp"
 
 #include <zlib.h>
 #include <algorithm>
@@ -16,7 +16,7 @@
 #include <sstream>
 #include <string>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 namespace {
 
@@ -198,7 +198,7 @@ Result<std::vector<RpaIndexEntry>> convertPickleToEntries(
 // ============================================================================
 
 Result<RpaArchive> parseRpaArchive(const fs::path& rpaPath) {
-    MAKINEAI_LOG_DEBUG(log::PARSER, "RPA: Parsing archive: %s", rpaPath.string().c_str());
+    MAKINE_LOG_DEBUG(log::PARSER, "RPA: Parsing archive: %s", rpaPath.string().c_str());
 
     std::ifstream file(rpaPath, std::ios::binary);
     if (!file) {
@@ -213,7 +213,7 @@ Result<RpaArchive> parseRpaArchive(const fs::path& rpaPath) {
     }
     auto header = *headerResult;
 
-    MAKINEAI_LOG_DEBUG(log::PARSER, "RPA: version=%d, indexOffset=0x%llx, xorKey=0x%llx",
+    MAKINE_LOG_DEBUG(log::PARSER, "RPA: version=%d, indexOffset=0x%llx, xorKey=0x%llx",
         static_cast<int>(header.version),
         static_cast<unsigned long long>(header.indexOffset),
         static_cast<unsigned long long>(header.xorKey));
@@ -244,7 +244,7 @@ Result<RpaArchive> parseRpaArchive(const fs::path& rpaPath) {
         return std::unexpected(decompResult.error());
     }
 
-    MAKINEAI_LOG_DEBUG(log::PARSER, "RPA: Index decompressed: %zu -> %zu bytes",
+    MAKINE_LOG_DEBUG(log::PARSER, "RPA: Index decompressed: %zu -> %zu bytes",
         compressedIndex.size(), decompResult->size());
 
     // Parse pickle
@@ -263,7 +263,7 @@ Result<RpaArchive> parseRpaArchive(const fs::path& rpaPath) {
     archive.header = header;
     archive.entries = std::move(*entriesResult);
 
-    MAKINEAI_LOG_INFO(log::PARSER, "RPA: Parsed %zu entries from %s",
+    MAKINE_LOG_INFO(log::PARSER, "RPA: Parsed %zu entries from %s",
         archive.entries.size(), rpaPath.filename().string().c_str());
 
     return archive;
@@ -304,4 +304,4 @@ Result<std::vector<uint8_t>> extractRpaEntry(
     return data;
 }
 
-} // namespace makineai::formats
+} // namespace makine::formats

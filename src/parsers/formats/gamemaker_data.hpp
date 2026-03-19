@@ -1,14 +1,14 @@
 /**
  * @file gamemaker_data.hpp
  * @brief GameMaker Studio data.win format structures
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #pragma once
 
 #include <cstdint>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 // IFF chunk header
 struct IffChunk {
@@ -25,4 +25,4 @@ struct Gen8Info {
     uint32_t buildVersion = 0;
 };
 
-} // namespace makineai::formats
+} // namespace makine::formats

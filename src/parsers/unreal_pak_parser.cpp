@@ -9,17 +9,17 @@
  * Note: For Unreal games, we primarily use file replacement
  * rather than direct binary patching.
  *
- * Copyright (c) 2026 MakineAI Team
+ * Copyright (c) 2026 Makine Team
  */
 
-#include "makineai/asset_parser.hpp"
-#include "makineai/logging.hpp"
-#include "makineai/metrics.hpp"
+#include "makine/asset_parser.hpp"
+#include "makine/logging.hpp"
+#include "makine/metrics.hpp"
 #include "formats/unreal_pak.hpp"
 #include <fstream>
 #include <algorithm>
 
-namespace makineai::parsers {
+namespace makine::parsers {
 
 namespace {
     // PAK magic: 0x5A6F12E1
@@ -57,17 +57,17 @@ public:
 
             bool isPak = (magic == PAK_MAGIC);
             if (isPak) {
-                MAKINEAI_LOG_DEBUG(log::PARSER, "Unreal PAK format detected: %s", file.filename().string().c_str());
+                MAKINE_LOG_DEBUG(log::PARSER, "Unreal PAK format detected: %s", file.filename().string().c_str());
             }
             return isPak;
         }
 
-        MAKINEAI_LOG_DEBUG(log::PARSER, "Unreal LocRes format detected: %s", file.filename().string().c_str());
+        MAKINE_LOG_DEBUG(log::PARSER, "Unreal LocRes format detected: %s", file.filename().string().c_str());
         return true; // .locres files
     }
 
     [[nodiscard]] Result<ParseResult> parse(const fs::path& file) const override {
-        MAKINEAI_LOG_INFO(log::PARSER, "Starting Unreal asset parse: %s", file.filename().string().c_str());
+        MAKINE_LOG_INFO(log::PARSER, "Starting Unreal asset parse: %s", file.filename().string().c_str());
         auto timer = Metrics::instance().timer("asset_parse_unreal");
 
         ParseResult result;
@@ -89,11 +89,11 @@ public:
             result.metadata["format"] = "unreal_pak";
 
             Metrics::instance().increment("assets_parsed_unreal");
-            MAKINEAI_LOG_INFO(log::PARSER, "Unreal PAK parse complete: %s", file.filename().string().c_str());
+            MAKINE_LOG_INFO(log::PARSER, "Unreal PAK parse complete: %s", file.filename().string().c_str());
 
         } catch (const std::exception& e) {
             result.message = e.what();
-            MAKINEAI_LOG_ERROR(log::PARSER, "Failed to parse PAK %s: %s", file.string().c_str(), e.what());
+            MAKINE_LOG_ERROR(log::PARSER, "Failed to parse PAK %s: %s", file.string().c_str(), e.what());
             Metrics::instance().increment("parse_failures_unreal");
         }
 
@@ -105,14 +105,14 @@ public:
         const std::vector<StringEntry>& strings
     ) const override {
         // PAK writing is complex - we use file replacement instead
-        MAKINEAI_LOG_WARN(log::PARSER, "Direct PAK writing not supported - use file replacement");
+        MAKINE_LOG_WARN(log::PARSER, "Direct PAK writing not supported - use file replacement");
         return std::unexpected(Error(ErrorCode::NotSupported,
             "Use file replacement for Unreal PAK files"));
     }
 
 private:
     [[nodiscard]] Result<ParseResult> parseLocRes(const fs::path& file) const {
-        MAKINEAI_LOG_INFO(log::PARSER, "Parsing Unreal LocRes: %s", file.filename().string().c_str());
+        MAKINE_LOG_INFO(log::PARSER, "Parsing Unreal LocRes: %s", file.filename().string().c_str());
 
         ParseResult result;
         result.success = false;
@@ -122,7 +122,7 @@ private:
         try {
             std::ifstream fs(file, std::ios::binary | std::ios::ate);
             if (!fs) {
-                MAKINEAI_LOG_ERROR(log::PARSER, "Cannot open locres file: %s", file.string().c_str());
+                MAKINE_LOG_ERROR(log::PARSER, "Cannot open locres file: %s", file.string().c_str());
                 Metrics::instance().increment("parse_failures_unreal");
                 return std::unexpected(Error(ErrorCode::FileNotFound,
                     "Cannot open locres file"));
@@ -136,7 +136,7 @@ private:
             fs.read(reinterpret_cast<char*>(&magic), 4);
 
             if (magic != 0x0E14DAD9) {
-                MAKINEAI_LOG_ERROR(log::PARSER, "Invalid LocRes magic: 0x%08X", magic);
+                MAKINE_LOG_ERROR(log::PARSER, "Invalid LocRes magic: 0x%08X", magic);
                 Metrics::instance().increment("parse_failures_unreal");
                 return std::unexpected(Error(ErrorCode::InvalidFormat,
                     "Invalid LocRes magic"));
@@ -146,7 +146,7 @@ private:
             uint8_t version;
             fs.read(reinterpret_cast<char*>(&version), 1);
             result.formatVersion = std::to_string(version);
-            MAKINEAI_LOG_DEBUG(log::PARSER, "LocRes version: %u", version);
+            MAKINE_LOG_DEBUG(log::PARSER, "LocRes version: %u", version);
 
             // Skip localized string offset table
             int64_t stringTableOffset;
@@ -155,7 +155,7 @@ private:
             // Namespace count
             uint32_t namespaceCount;
             fs.read(reinterpret_cast<char*>(&namespaceCount), 4);
-            MAKINEAI_LOG_DEBUG(log::PARSER, "LocRes namespaces: %u", namespaceCount);
+            MAKINE_LOG_DEBUG(log::PARSER, "LocRes namespaces: %u", namespaceCount);
 
             for (uint32_t ns = 0; ns < namespaceCount && fs.good(); ns++) {
                 // Namespace name
@@ -191,11 +191,11 @@ private:
             result.message = "Parsed " + std::to_string(result.strings.size()) + " strings";
 
             Metrics::instance().increment("assets_parsed_unreal");
-            MAKINEAI_LOG_INFO(log::PARSER, "Parsed LocRes: %zu strings from %s",
+            MAKINE_LOG_INFO(log::PARSER, "Parsed LocRes: %zu strings from %s",
                         result.strings.size(), file.filename().string().c_str());
 
         } catch (const std::exception& e) {
-            MAKINEAI_LOG_ERROR(log::PARSER, "LocRes parse exception: %s", e.what());
+            MAKINE_LOG_ERROR(log::PARSER, "LocRes parse exception: %s", e.what());
             Metrics::instance().increment("parse_failures_unreal");
             return std::unexpected(Error(ErrorCode::ParseError, e.what()));
         }
@@ -250,11 +250,11 @@ private:
     }
 };
 
-} // namespace makineai::parsers
+} // namespace makine::parsers
 
-// Factory function in makineai namespace (to match parsers_factory.hpp declaration)
-namespace makineai {
+// Factory function in makine namespace (to match parsers_factory.hpp declaration)
+namespace makine {
 std::unique_ptr<parsers::IAssetFormatParser> createUnrealPakParser() {
     return std::make_unique<parsers::UnrealPakParser>();
 }
-} // namespace makineai
+} // namespace makine

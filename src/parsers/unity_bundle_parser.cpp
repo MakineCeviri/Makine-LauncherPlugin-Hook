@@ -1,12 +1,12 @@
 /**
  * @file unity_bundle_parser.cpp
  * @brief Unity AssetBundle parser implementation
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
-#include "makineai/asset_parser.hpp"
-#include "makineai/logging.hpp"
-#include "makineai/metrics.hpp"
+#include "makine/asset_parser.hpp"
+#include "makine/logging.hpp"
+#include "makine/metrics.hpp"
 #include "formats/unity_bundle.hpp"
 
 #include <algorithm>
@@ -28,7 +28,7 @@ inline uint64_t bswap64(uint64_t v) {
 }
 } // anonymous namespace
 
-namespace makineai::parsers {
+namespace makine::parsers {
 
 using namespace formats;
 
@@ -73,14 +73,14 @@ public:
                        std::string_view(magic) == kUnityRawMagic;
 
         if (isUnity) {
-            MAKINEAI_LOG_DEBUG(log::PARSER, "Unity format detected: magic=%s", magic);
+            MAKINE_LOG_DEBUG(log::PARSER, "Unity format detected: magic=%s", magic);
         }
 
         return isUnity;
     }
 
     [[nodiscard]] Result<ParseResult> parse(const fs::path& file) const override {
-        MAKINEAI_LOG_INFO(log::PARSER, "Starting Unity bundle parse: %s", file.filename().string().c_str());
+        MAKINE_LOG_INFO(log::PARSER, "Starting Unity bundle parse: %s", file.filename().string().c_str());
         auto timer = Metrics::instance().timer("asset_parse_unity");
 
         ParseResult result;
@@ -89,7 +89,7 @@ public:
 
         std::ifstream stream(file, std::ios::binary);
         if (!stream) {
-            MAKINEAI_LOG_ERROR(log::PARSER, "Cannot open Unity bundle: %s", file.string().c_str());
+            MAKINE_LOG_ERROR(log::PARSER, "Cannot open Unity bundle: %s", file.string().c_str());
             Metrics::instance().increment("parse_failures_unity");
             return std::unexpected(Error(ErrorCode::FileAccessDenied,
                 "Cannot open file: " + file.string()));
@@ -98,7 +98,7 @@ public:
         // Read header
         auto headerResult = readHeader(stream);
         if (!headerResult) {
-            MAKINEAI_LOG_ERROR(log::PARSER, "Failed to read Unity header: %s", headerResult.error().message.c_str());
+            MAKINE_LOG_ERROR(log::PARSER, "Failed to read Unity header: %s", headerResult.error().message.c_str());
             Metrics::instance().increment("parse_failures_unity");
             return std::unexpected(headerResult.error());
         }
@@ -106,18 +106,18 @@ public:
         auto& header = *headerResult;
         result.formatVersion = std::to_string(header.formatVersion);
         result.metadata["unityVersion"] = header.unityVersion;
-        MAKINEAI_LOG_DEBUG(log::PARSER, "Unity version: %s, format: %u", header.unityVersion.c_str(), header.formatVersion);
+        MAKINE_LOG_DEBUG(log::PARSER, "Unity version: %s, format: %u", header.unityVersion.c_str(), header.formatVersion);
 
         // Read blocks info
         auto blocksResult = readBlocksInfo(stream, header);
         if (!blocksResult) {
-            MAKINEAI_LOG_WARN(log::PARSER, "Failed to read Unity blocks info: %s", blocksResult.error().message.c_str());
+            MAKINE_LOG_WARN(log::PARSER, "Failed to read Unity blocks info: %s", blocksResult.error().message.c_str());
             Metrics::instance().increment("parse_failures_unity");
             return std::unexpected(blocksResult.error());
         }
 
         auto& [blocks, nodes] = *blocksResult;
-        MAKINEAI_LOG_DEBUG(log::PARSER, "Unity bundle: %zu blocks, %zu nodes", blocks.size(), nodes.size());
+        MAKINE_LOG_DEBUG(log::PARSER, "Unity bundle: %zu blocks, %zu nodes", blocks.size(), nodes.size());
 
         // Decompress and read data
         for (const auto& node : nodes) {
@@ -135,7 +135,7 @@ public:
         result.message = "Parsed " + std::to_string(result.strings.size()) + " strings";
 
         Metrics::instance().increment("assets_parsed_unity");
-        MAKINEAI_LOG_INFO(log::PARSER, "Unity bundle parse complete: %zu strings", result.strings.size());
+        MAKINE_LOG_INFO(log::PARSER, "Unity bundle parse complete: %zu strings", result.strings.size());
 
         return result;
     }
@@ -333,17 +333,17 @@ private:
 
         // Bundle structure is parsed - string extraction from serialized
         // files requires the handler approach or runtime translation
-        MAKINEAI_LOG_DEBUG(log::PARSER, "Unity serialized file parsing: Use UnityHandler for string extraction");
+        MAKINE_LOG_DEBUG(log::PARSER, "Unity serialized file parsing: Use UnityHandler for string extraction");
 
         return strings;
     }
 };
 
-} // namespace makineai::parsers
+} // namespace makine::parsers
 
-// Factory function in makineai namespace (to match parsers_factory.hpp declaration)
-namespace makineai {
+// Factory function in makine namespace (to match parsers_factory.hpp declaration)
+namespace makine {
 std::unique_ptr<parsers::IAssetFormatParser> createUnityBundleParser() {
     return std::make_unique<parsers::UnityBundleParser>();
 }
-} // namespace makineai
+} // namespace makine

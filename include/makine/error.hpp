@@ -3,7 +3,7 @@
 #include <string>
 #include <expected>
 
-namespace makineai {
+namespace makine {
 
 enum class ErrorCode {
     OK = 0,
@@ -34,4 +34,4 @@ using Result = std::expected<T, Error>;
 
 using VoidResult = std::expected<void, Error>;
 
-} // namespace makineai
+} // namespace makine

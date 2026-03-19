@@ -9,12 +9,12 @@
  * - .strings localization files
  * - Compression: Zlib, LZ4
  *
- * Copyright (c) 2026 MakineAI Team
+ * Copyright (c) 2026 Makine Team
  */
 
-#include "makineai/asset_parser.hpp"
-#include "makineai/logging.hpp"
-#include "makineai/metrics.hpp"
+#include "makine/asset_parser.hpp"
+#include "makine/logging.hpp"
+#include "makine/metrics.hpp"
 #include "formats/bethesda_ba2.hpp"
 #include <fstream>
 #include <algorithm>
@@ -22,7 +22,7 @@
 #include <zlib.h>
 #include <lz4.h>
 
-namespace makineai::parsers {
+namespace makine::parsers {
 
 namespace {
     // BA2 magic: "BTDX"
@@ -61,7 +61,7 @@ public:
 
         // Accept .strings files directly
         if (ext == ".strings" || ext == ".dlstrings" || ext == ".ilstrings") {
-            MAKINEAI_LOG_DEBUG(log::PARSER, "Bethesda strings format detected: %s", file.filename().string().c_str());
+            MAKINE_LOG_DEBUG(log::PARSER, "Bethesda strings format detected: %s", file.filename().string().c_str());
             return true;
         }
 
@@ -78,14 +78,14 @@ public:
 
         bool isBa2 = (magic == BA2_MAGIC);
         if (isBa2) {
-            MAKINEAI_LOG_DEBUG(log::PARSER, "Bethesda BA2 format detected: %s", file.filename().string().c_str());
+            MAKINE_LOG_DEBUG(log::PARSER, "Bethesda BA2 format detected: %s", file.filename().string().c_str());
         }
 
         return isBa2;
     }
 
     [[nodiscard]] Result<ParseResult> parse(const fs::path& file) const override {
-        MAKINEAI_LOG_INFO(log::PARSER, "Starting Bethesda asset parse: %s", file.filename().string().c_str());
+        MAKINE_LOG_INFO(log::PARSER, "Starting Bethesda asset parse: %s", file.filename().string().c_str());
         auto timer = Metrics::instance().timer("asset_parse_ba2");
 
         ParseResult result;
@@ -103,7 +103,7 @@ public:
 
             std::ifstream ifs(file, std::ios::binary | std::ios::ate);
             if (!ifs) {
-                MAKINEAI_LOG_ERROR(log::PARSER, "Cannot open BA2 file: %s", file.string().c_str());
+                MAKINE_LOG_ERROR(log::PARSER, "Cannot open BA2 file: %s", file.string().c_str());
                 Metrics::instance().increment("parse_failures_ba2");
                 return std::unexpected(Error(ErrorCode::FileNotFound,
                     "Cannot open BA2 file"));
@@ -118,7 +118,7 @@ public:
 
             ifs.read(reinterpret_cast<char*>(&magic), 4);
             if (magic != BA2_MAGIC) {
-                MAKINEAI_LOG_ERROR(log::PARSER, "Invalid BA2 magic: 0x%08X", magic);
+                MAKINE_LOG_ERROR(log::PARSER, "Invalid BA2 magic: 0x%08X", magic);
                 Metrics::instance().increment("parse_failures_ba2");
                 return std::unexpected(Error(ErrorCode::InvalidFormat,
                     "Invalid BA2 magic"));
@@ -141,11 +141,11 @@ public:
             result.message = "BA2 archive detected - check .strings files for text";
 
             Metrics::instance().increment("assets_parsed_ba2");
-            MAKINEAI_LOG_INFO(log::PARSER, "Parsed BA2: version %u, type %s, %u files",
+            MAKINE_LOG_INFO(log::PARSER, "Parsed BA2: version %u, type %s, %u files",
                         version, fileTypeToString(type).c_str(), fileCount);
 
         } catch (const std::exception& e) {
-            MAKINEAI_LOG_ERROR(log::PARSER, "BA2 parse exception: %s", e.what());
+            MAKINE_LOG_ERROR(log::PARSER, "BA2 parse exception: %s", e.what());
             Metrics::instance().increment("parse_failures_ba2");
             return std::unexpected(Error(ErrorCode::ParseError, e.what()));
         }
@@ -166,14 +166,14 @@ public:
         }
 
         // BA2 archive writing is complex - use file replacement
-        MAKINEAI_LOG_WARN(log::PARSER, "Direct BA2 writing not fully supported - use file replacement");
+        MAKINE_LOG_WARN(log::PARSER, "Direct BA2 writing not fully supported - use file replacement");
         return std::unexpected(Error(ErrorCode::NotSupported,
             "Use file replacement for BA2 archives"));
     }
 
 private:
     [[nodiscard]] Result<ParseResult> parseStringsFile(const fs::path& file) const {
-        MAKINEAI_LOG_INFO(log::PARSER, "Parsing Bethesda strings file: %s", file.filename().string().c_str());
+        MAKINE_LOG_INFO(log::PARSER, "Parsing Bethesda strings file: %s", file.filename().string().c_str());
 
         ParseResult result;
         result.success = false;
@@ -183,7 +183,7 @@ private:
         try {
             std::ifstream ifs(file, std::ios::binary | std::ios::ate);
             if (!ifs) {
-                MAKINEAI_LOG_ERROR(log::PARSER, "Cannot open strings file: %s", file.string().c_str());
+                MAKINE_LOG_ERROR(log::PARSER, "Cannot open strings file: %s", file.string().c_str());
                 Metrics::instance().increment("parse_failures_ba2");
                 return std::unexpected(Error(ErrorCode::FileNotFound,
                     "Cannot open strings file"));
@@ -198,13 +198,13 @@ private:
             ifs.read(reinterpret_cast<char*>(&dataSize), 4);
 
             if (count > 1000000) { // Sanity check
-                MAKINEAI_LOG_ERROR(log::PARSER, "Invalid string count: %u", count);
+                MAKINE_LOG_ERROR(log::PARSER, "Invalid string count: %u", count);
                 Metrics::instance().increment("parse_failures_ba2");
                 return std::unexpected(Error(ErrorCode::InvalidFormat,
                     "Invalid string count"));
             }
 
-            MAKINEAI_LOG_DEBUG(log::PARSER, "Strings file: %u entries, %u bytes data", count, dataSize);
+            MAKINE_LOG_DEBUG(log::PARSER, "Strings file: %u entries, %u bytes data", count, dataSize);
 
             // Read directory (ID + offset pairs)
             std::vector<std::pair<uint32_t, uint32_t>> directory(count);
@@ -236,11 +236,11 @@ private:
             result.message = "Parsed " + std::to_string(result.strings.size()) + " strings";
 
             Metrics::instance().increment("assets_parsed_ba2");
-            MAKINEAI_LOG_INFO(log::PARSER, "Parsed strings file: %zu entries from %s",
+            MAKINE_LOG_INFO(log::PARSER, "Parsed strings file: %zu entries from %s",
                         result.strings.size(), file.filename().string().c_str());
 
         } catch (const std::exception& e) {
-            MAKINEAI_LOG_ERROR(log::PARSER, "Strings file parse exception: %s", e.what());
+            MAKINE_LOG_ERROR(log::PARSER, "Strings file parse exception: %s", e.what());
             Metrics::instance().increment("parse_failures_ba2");
             return std::unexpected(Error(ErrorCode::ParseError, e.what()));
         }
@@ -263,7 +263,7 @@ private:
                     const auto& text = entry.translated.empty() ? entry.original : entry.translated;
                     sortedStrings.emplace_back(id, text);
                 } catch (const std::exception& e) {
-                    MAKINEAI_LOG_WARN(log::PARSER, "Skipping BA2 entry with invalid key '%s': %s",
+                    MAKINE_LOG_WARN(log::PARSER, "Skipping BA2 entry with invalid key '%s': %s",
                                       entry.key.c_str(), e.what());
                     continue;
                 }
@@ -283,7 +283,7 @@ private:
             }
 
             // Atomic write
-            fs::path tempPath = file.string() + ".makineai_tmp";
+            fs::path tempPath = file.string() + ".makine_tmp";
 
             {
                 std::ofstream ofs(tempPath, std::ios::binary | std::ios::trunc);
@@ -326,7 +326,7 @@ private:
                     "Strings file rename failed: " + ec.message()));
             }
 
-            MAKINEAI_LOG_INFO(log::PARSER, "Wrote strings file: %u entries to %s",
+            MAKINE_LOG_INFO(log::PARSER, "Wrote strings file: %u entries to %s",
                         count, file.filename().string().c_str());
 
             return {};
@@ -337,11 +337,11 @@ private:
     }
 };
 
-} // namespace makineai::parsers
+} // namespace makine::parsers
 
-// Factory function in makineai namespace (to match parsers_factory.hpp declaration)
-namespace makineai {
+// Factory function in makine namespace (to match parsers_factory.hpp declaration)
+namespace makine {
 std::unique_ptr<parsers::IAssetFormatParser> createBethesdaBa2Parser() {
     return std::make_unique<parsers::BethesdaBa2Parser>();
 }
-} // namespace makineai
+} // namespace makine

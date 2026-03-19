@@ -1,5 +1,5 @@
 {
-    "name": "makineaihook",
+    "name": "makine-hook-plugin",
     "version": "0.2.0",
     "dependencies": [
         "zlib",

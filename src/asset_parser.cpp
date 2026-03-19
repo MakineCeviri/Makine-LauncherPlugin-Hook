@@ -1,12 +1,12 @@
 /**
  * @file asset_parser.cpp
  * @brief AssetParser dispatcher implementation
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
-#include "makineai/asset_parser.hpp"
+#include "makine/asset_parser.hpp"
 
-namespace makineai::parsers {
+namespace makine::parsers {
 
 AssetParser::AssetParser() = default;
 AssetParser::~AssetParser() = default;
@@ -116,4 +116,4 @@ void AssetParser::registerBuiltinParsers() {
     // Intentionally empty — parsers are registered externally via factory functions
 }
 
-} // namespace makineai::parsers
+} // namespace makine::parsers

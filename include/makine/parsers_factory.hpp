@@ -1,15 +1,15 @@
 /**
  * @file parsers_factory.hpp
  * @brief Factory functions for creating asset parsers
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #pragma once
 
-#include "makineai/asset_parser.hpp"
+#include "makine/asset_parser.hpp"
 #include <memory>
 
-namespace makineai {
+namespace makine {
 
 /**
  * @brief Create Unity AssetBundle parser
@@ -35,4 +35,4 @@ std::unique_ptr<parsers::IAssetFormatParser> createBethesdaBa2Parser();
  */
 std::unique_ptr<parsers::IAssetFormatParser> createGameMakerDataParser();
 
-} // namespace makineai
+} // namespace makine

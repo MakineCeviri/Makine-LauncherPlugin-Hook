@@ -14,7 +14,7 @@
 /// Engine-specific modules can optionally extract structured data (hash tables, etc.)
 /// but the base extraction works universally.
 
-#include "makineai/types.hpp"
+#include "makine/types.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace makineai {
+namespace makine {
 
 // ────────────────────────────────────────────────────────────────
 // Data types
@@ -271,4 +271,4 @@ public:
         uint64_t base_addr) const override;
 };
 
-} // namespace makineai
+} // namespace makine

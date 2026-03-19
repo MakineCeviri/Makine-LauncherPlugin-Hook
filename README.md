@@ -1,4 +1,4 @@
-# MakineAI Hook
+# Makine Hook
 
 > Oyun cevirisi icin super arac seti -- hooking, asset analizi, bellek tarama
 
@@ -8,7 +8,7 @@
 
 ## Nedir?
 
-MakineAI Hook, [MakineAI Launcher](https://github.com/MakineCeviri/MakineAI-Launcher) icin gelistirilen topluluk eklentisidir. Oyun metinlerini yakalamak, oyun dosyalarini analiz etmek ve bellekten metin cikarmak icin gereken tum araclari tek bir eklentide toplar. Iki DLL mimarisi ile calisir: plugin DLL (Launcher tarafindan yuklenir) ve hook DLL (oyun process'ine enjekte edilir).
+Makine Hook, [Makine Launcher](https://github.com/MakineCeviri/Makine-Launcher) icin gelistirilen topluluk eklentisidir. Oyun metinlerini yakalamak, oyun dosyalarini analiz etmek ve bellekten metin cikarmak icin gereken tum araclari tek bir eklentide toplar. Iki DLL mimarisi ile calisir: plugin DLL (Launcher tarafindan yuklenir) ve hook DLL (oyun process'ine enjekte edilir).
 
 ## Ozellikler
 
@@ -16,7 +16,7 @@ MakineAI Hook, [MakineAI Launcher](https://github.com/MakineCeviri/MakineAI-Laun
 
 - **10 GDI/User32 Hook** -- TextOutW/A, ExtTextOutW/A, DrawTextW/A, DrawTextExW/A, GetGlyphOutlineW/A
 - **x64 Inline Hooking** -- 14-byte JMP ile guvenli fonksiyon yakalama + trampoline
-- **Named Pipe IPC** -- `\\.\pipe\MakineAI_TextHook_{PID}` uzerinden dusuk gecikmeli iletisim
+- **Named Pipe IPC** -- `\\.\pipe\Makine_TextHook_{PID}` uzerinden dusuk gecikmeli iletisim
 - **Tekrar Filtresi** -- Ring buffer (10 girdi) ile ayni metni tekrar gondermez
 - **Glyph Biriktirme** -- GetGlyphOutline cagrilarini 50ms timeout ile birlestirerek tam kelime olusturur
 - **DLL Injection** -- CreateRemoteThread + LoadLibraryW ile hedef process'e enjeksiyon
@@ -40,24 +40,24 @@ MakineAI Hook, [MakineAI Launcher](https://github.com/MakineCeviri/MakineAI-Laun
 Iki DLL mimarisi:
 
 ```
-MakineAI Launcher
+Makine Launcher
     | LoadLibrary
-makineaihook.dll (Plugin DLL -- ~3 MB)
+makine-hook-plugin.dll (Plugin DLL -- ~3 MB)
     |-- Asset Parser    -> Oyun dosyalarini analiz et
     |-- Memory Scanner  -> Bellekten metin cikar
     '-- Hook Manager    -> Oyun process'ine enjekte et
          | CreateRemoteThread
-         makineai-hook.dll (Hook DLL -- ~156 KB)
+         makine-hook.dll (Hook DLL -- ~156 KB)
               | Inline Hook (14-byte JMP)
               TextOutW, DrawTextW, ExtTextOutW...
               | Named Pipe
-              makineaihook.dll <- Yakalanan metin
+              makine-hook-plugin.dll <- Yakalanan metin
 ```
 
 | DLL | Boyut | Gorev |
 |-----|-------|-------|
-| `makineaihook.dll` | ~3 MB | Plugin -- asset parsing, bellek tarama, injection yonetimi, pipe sunucu |
-| `makineai-hook.dll` | ~156 KB | Hook -- oyuna enjekte edilir, GDI fonksiyonlarini yakalar |
+| `makine-hook-plugin.dll` | ~3 MB | Plugin -- asset parsing, bellek tarama, injection yonetimi, pipe sunucu |
+| `makine-hook.dll` | ~156 KB | Hook -- oyuna enjekte edilir, GDI fonksiyonlarini yakalar |
 
 ## Desteklenen Motorlar
 
@@ -71,15 +71,15 @@ makineaihook.dll (Plugin DLL -- ~3 MB)
 
 ## Kurulum
 
-### MakineAI Launcher uzerinden (onerilen)
+### Makine Launcher uzerinden (onerilen)
 
 1. **Eklentiler** sayfasina gidin
-2. **MakineAI Hook** bulun ve **Kur** tusuna basin
+2. **Makine Hook** bulun ve **Kur** tusuna basin
 3. Eklentiyi etkinlestirin
 
 ### Elle kurulum
 
-1. [Releases](https://github.com/MakineCeviri/MakineAI-Plugin-MakineAIHook/releases) sayfasindan `.makine` dosyasini indirin
+1. [Releases](https://github.com/MakineCeviri/Makine-LauncherPlugin-Hook/releases) sayfasindan `.makine` dosyasini indirin
 2. Launcher'da **Eklentiler** > **Dosyadan Kur** ile yukleyin
 
 ## Derleme
@@ -106,12 +106,12 @@ cmake -B build -G Ninja \
 cmake --build build
 ```
 
-Iki DLL uretilir: `build/release/makineaihook.dll` (plugin) ve `build/release/makineai-hook.dll` (hook).
+Iki DLL uretilir: `build/release/makine-hook-plugin.dll` (plugin) ve `build/release/makine-hook.dll` (hook).
 
 ### Paketleme
 
 ```bash
-python makine-pack.py build/release -o makineaihook.makine
+python makine-pack.py build/release -o makine-hook.makine
 ```
 
 ## C ABI Referansi
@@ -122,43 +122,43 @@ Tum exportlar `extern "C" __declspec(dllexport)` ile tanimlanmistir.
 
 | Export | Donus | Aciklama |
 |--------|-------|----------|
-| `makineai_get_info()` | `MakineAiPluginInfo` | Plugin kimlik bilgileri (id, name, version, apiVersion) |
-| `makineai_initialize(const char* dataPath)` | `MakineAiError` | Baslat: ayarlari yukle, hook manager ve parser'lari kaydet |
-| `makineai_shutdown()` | `void` | Kapat: hook'lari serbest birak, ayarlari kaydet |
-| `makineai_is_ready()` | `bool` | Plugin hazir mi? |
-| `makineai_get_last_error()` | `const char*` | Son hata mesaji |
+| `makine_get_info()` | `MakinePluginInfo` | Plugin kimlik bilgileri (id, name, version, apiVersion) |
+| `makine_initialize(const char* dataPath)` | `MakineError` | Baslat: ayarlari yukle, hook manager ve parser'lari kaydet |
+| `makine_shutdown()` | `void` | Kapat: hook'lari serbest birak, ayarlari kaydet |
+| `makine_is_ready()` | `bool` | Plugin hazir mi? |
+| `makine_get_last_error()` | `const char*` | Son hata mesaji |
 
 ### Ayarlar (2)
 
 | Export | Donus | Aciklama |
 |--------|-------|----------|
-| `makineai_get_setting(const char* key)` | `const char*` | Ayar degerini oku |
-| `makineai_set_setting(const char* key, const char* value)` | `void` | Ayar yaz ve kaydet |
+| `makine_get_setting(const char* key)` | `const char*` | Ayar degerini oku |
+| `makine_set_setting(const char* key, const char* value)` | `void` | Ayar yaz ve kaydet |
 
 ### Hooking (4)
 
 | Export | Donus | Aciklama |
 |--------|-------|----------|
-| `makineai_inject_process(DWORD pid)` | `bool` | Hedef process'e hook DLL enjekte et |
-| `makineai_detach_process()` | `void` | Enjekte edilen hook'u kaldir |
-| `makineai_get_hooked_text()` | `const char*` | Son yakalanan metni al |
-| `makineai_is_injected()` | `bool` | Hook aktif mi? |
+| `makine_inject_process(DWORD pid)` | `bool` | Hedef process'e hook DLL enjekte et |
+| `makine_detach_process()` | `void` | Enjekte edilen hook'u kaldir |
+| `makine_get_hooked_text()` | `const char*` | Son yakalanan metni al |
+| `makine_is_injected()` | `bool` | Hook aktif mi? |
 
 ### Asset Parsing (4)
 
 | Export | Donus | Aciklama |
 |--------|-------|----------|
-| `makineai_detect_engine(const char* gamePath)` | `const char*` | Dosyadan oyun motorunu tespit et |
-| `makineai_parse_assets(const char* filePath)` | `int` | Dosyayi analiz et, string sayisini dondur (-1 = hata) |
-| `makineai_get_string_count()` | `int` | Son parse islemindeki string sayisi |
-| `makineai_get_string_at(int index)` | `const char*` | String al (JSON: key, original, context, offset, maxLength) |
+| `makine_detect_engine(const char* gamePath)` | `const char*` | Dosyadan oyun motorunu tespit et |
+| `makine_parse_assets(const char* filePath)` | `int` | Dosyayi analiz et, string sayisini dondur (-1 = hata) |
+| `makine_get_string_count()` | `int` | Son parse islemindeki string sayisi |
+| `makine_get_string_at(int index)` | `const char*` | String al (JSON: key, original, context, offset, maxLength) |
 
 ### Bellek Tarama (2)
 
 | Export | Donus | Aciklama |
 |--------|-------|----------|
-| `makineai_scan_memory(DWORD pid)` | `int` | Process bellegini tara, bulunan metin sayisini dondur |
-| `makineai_get_scanned_text(int index)` | `const char*` | Taranan metni al (JSON: text, category, encoding, address, length) |
+| `makine_scan_memory(DWORD pid)` | `int` | Process bellegini tara, bulunan metin sayisini dondur |
+| `makine_get_scanned_text(int index)` | `const char*` | Taranan metni al (JSON: text, category, encoding, address, length) |
 
 ## Ayarlar
 
@@ -176,16 +176,16 @@ Tum exportlar `extern "C" __declspec(dllexport)` ile tanimlanmistir.
 ## Proje Yapisi
 
 ```
-MakineAI-Plugin-MakineAIHook/
+Makine-LauncherPlugin-Hook/
 |-- manifest.json                         Eklenti meta verileri ve ayar tanimlari
 |-- CMakeLists.txt                        Iki DLL icin derleme yapilandirmasi
 |-- vcpkg.json                            vcpkg bagimliliklari
 |-- makine-pack.py                        .makine paketleme araci
 |-- include/
-|   '-- makineai/
+|   '-- makine/
 |       |-- plugin/
 |       |   |-- plugin_api.h              C ABI tanimlari
-|       |   '-- plugin_types.h            Plugin tipleri (MakineAiPluginInfo, MakineAiError)
+|       |   '-- plugin_types.h            Plugin tipleri (MakinePluginInfo, MakineError)
 |       |-- asset_parser.hpp              Asset parser arayuzu + registry
 |       |-- parsers_factory.hpp           Parser factory fonksiyonlari
 |       |-- memory_extractor.hpp          Bellek tarama arayuzu
@@ -257,7 +257,7 @@ Katkilerinizi bekliyoruz! Ozellikle yeni oyun motoru handler'lari ve parser'lar 
 3. Degisikliklerinizi commit edin
 4. Pull Request acin
 
-Yeni eklenti gelistirmek icin [MakineAI-Plugin-Template](https://github.com/MakineCeviri/MakineAI-Plugin-Template) deposunu kullanabilirsiniz.
+Yeni eklenti gelistirmek icin [Makine-LauncherPlugin-Template](https://github.com/MakineCeviri/Makine-LauncherPlugin-Template) deposunu kullanabilirsiniz.
 
 ## Lisans
 

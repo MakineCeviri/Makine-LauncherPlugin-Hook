@@ -1,14 +1,14 @@
 /**
  * @file unreal_pak.hpp
  * @brief Unreal Engine PAK format structures
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #pragma once
 
 #include <cstdint>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 // PAK footer magic
 constexpr uint32_t kUnrealPakMagic = 0x5A6F12E1;
@@ -24,4 +24,4 @@ struct PakFooter {
     uint8_t hash[20]{};
 };
 
-} // namespace makineai::formats
+} // namespace makine::formats

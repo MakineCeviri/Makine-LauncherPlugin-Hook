@@ -1,7 +1,7 @@
 /**
  * @file handlers/engine_handler.hpp
  * @brief Engine handler interface and related types
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  *
  * Deferred feature — stub interface for compilation.
  * Handler-based pipeline was closed; these provide the interface
@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "makineai/types.hpp"
-#include "makineai/error.hpp"
+#include "makine/types.hpp"
+#include "makine/error.hpp"
 
 #include <filesystem>
 #include <string>
 #include <vector>
 
-namespace makineai {
+namespace makine {
 
 // ============================================================================
 // Handler-specific types
@@ -78,4 +78,4 @@ public:
     ) = 0;
 };
 
-} // namespace makineai
+} // namespace makine

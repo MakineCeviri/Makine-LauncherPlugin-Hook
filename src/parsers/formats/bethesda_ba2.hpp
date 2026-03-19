@@ -1,14 +1,14 @@
 /**
  * @file bethesda_ba2.hpp
  * @brief Bethesda BA2 archive format structures
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #pragma once
 
 #include <cstdint>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 // BA2 magic: "BTDX"
 constexpr uint32_t kBa2Magic = 0x58445442;
@@ -32,4 +32,4 @@ struct Ba2FileEntry {
     uint32_t align = 0;
 };
 
-} // namespace makineai::formats
+} // namespace makine::formats

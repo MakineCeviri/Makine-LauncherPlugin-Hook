@@ -1,7 +1,7 @@
 /**
  * @file pickle_reader.cpp
  * @brief Minimal Python pickle protocol 2 decoder
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #include "pickle_reader.hpp"
@@ -10,7 +10,7 @@
 #include <stack>
 #include <stdexcept>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 // Python pickle opcodes (protocol 0-2 subset used by Ren'Py)
 namespace opcode {
@@ -558,4 +558,4 @@ Result<PickleValue> parsePickle(std::span<const uint8_t> data) {
     }
 }
 
-} // namespace makineai::formats
+} // namespace makine::formats

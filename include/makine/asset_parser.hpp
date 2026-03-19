@@ -1,21 +1,21 @@
 /**
  * @file asset_parser.hpp
  * @brief Game asset file parsing and writing
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  *
  * This module provides asset parsing capabilities:
  * - Format-specific parsers (Unity, Unreal, Bethesda, GameMaker)
  * - String extraction from binary and text assets
  * - Writing translated strings back
  *
- * Namespace: makineai::parsers
- * (Backward compatible: also available in makineai::)
+ * Namespace: makine::parsers
+ * (Backward compatible: also available in makine::)
  */
 
 #pragma once
 
-#include "makineai/types.hpp"
-#include "makineai/error.hpp"
+#include "makine/types.hpp"
+#include "makine/error.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -24,7 +24,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace makineai {
+namespace makine {
 
 // Common type aliases used by parsers
 using ByteBuffer = std::vector<uint8_t>;
@@ -162,12 +162,12 @@ class GameMakerDataParser;
 // ============================================================================
 // BACKWARD COMPATIBILITY ALIASES
 // ============================================================================
-// These aliases allow existing code to use makineai::AssetParser etc.
-// without modification. New code should prefer makineai::parsers::*.
+// These aliases allow existing code to use makine::AssetParser etc.
+// without modification. New code should prefer makine::parsers::*.
 
 using StringEntry = parsers::StringEntry;
 using ParseResult = parsers::ParseResult;
 using IAssetFormatParser = parsers::IAssetFormatParser;
 using AssetParser = parsers::AssetParser;
 
-} // namespace makineai
+} // namespace makine

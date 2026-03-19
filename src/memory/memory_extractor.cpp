@@ -1,10 +1,10 @@
 /**
  * @file memory_extractor.cpp
  * @brief MemoryExtractor implementation — Windows process memory scanning
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
-#include "makineai/memory_extractor.hpp"
+#include "makine/memory_extractor.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -18,7 +18,7 @@
 #include <psapi.h>
 #include <tlhelp32.h>
 
-namespace makineai {
+namespace makine {
 
 // ────────────────────────────────────────────────────────────────
 // Turkish fingerprint utilities
@@ -492,4 +492,4 @@ std::optional<MemoryExtractionResult> MemoryExtractor::loadFromJson(
     return std::nullopt;
 }
 
-} // namespace makineai
+} // namespace makine

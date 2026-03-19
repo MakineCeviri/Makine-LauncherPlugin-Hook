@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace makineai {
+namespace makine {
 
 class Metrics {
 public:
@@ -13,4 +13,4 @@ public:
     void increment(const char*) {}
 };
 
-} // namespace makineai
+} // namespace makine

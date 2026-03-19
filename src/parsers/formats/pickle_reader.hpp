@@ -1,7 +1,7 @@
 /**
  * @file pickle_reader.hpp
  * @brief Minimal Python pickle protocol 2 decoder (internal)
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  *
  * Decodes the subset of pickle opcodes used by Ren'Py's RPA index.
  * Security: No REDUCE/GLOBAL/INST/BUILD/OBJ opcodes — no code execution.
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "makineai/error.hpp"
+#include "makine/error.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -18,7 +18,7 @@
 #include <variant>
 #include <vector>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 // Forward declarations for recursive types
 struct PickleValue;
@@ -95,4 +95,4 @@ struct PickleValue {
  */
 [[nodiscard]] Result<PickleValue> parsePickle(std::span<const uint8_t> data);
 
-} // namespace makineai::formats
+} // namespace makine::formats

@@ -12,7 +12,7 @@ namespace {
 class PipeClient {
 public:
     bool connect(DWORD targetPid) {
-        std::wstring pipeName = L"\\\\.\\pipe\\MakineAI_TextHook_"
+        std::wstring pipeName = L"\\\\.\\pipe\\Makine_TextHook_"
                                 + std::to_wstring(targetPid);
 
         // Retry a few times — pipe server may not be ready yet

@@ -133,10 +133,10 @@ bool HookManager::injectDll(DWORD pid, const std::wstring& dllPath) {
     }
 
     // Set environment variable so hook DLL knows the launcher PID for pipe name
-    std::wstring envVar = L"MAKINEAI_HOST_PID=" + std::to_wstring(GetCurrentProcessId());
+    std::wstring envVar = L"MAKINE_HOST_PID=" + std::to_wstring(GetCurrentProcessId());
     // We pass launcher PID via environment — inject a SetEnvironmentVariableW call first
     // For simplicity, encode the PID in the pipe name using target PID instead
-    // The hook DLL will connect to \\.\pipe\MakineAI_TextHook_{its own PID}
+    // The hook DLL will connect to \\.\pipe\Makine_TextHook_{its own PID}
 
     HANDLE hThread = CreateRemoteThread(hProcess, nullptr, 0,
                                          pLoadLibraryW, remoteMemory, 0, nullptr);
@@ -183,7 +183,7 @@ bool HookManager::ejectDll(DWORD pid, const std::wstring& dllPath) {
         do {
             // Compare module name to our hook DLL
             std::wstring modName = me.szModule;
-            if (modName == L"makineai-hook.dll") {
+            if (modName == L"makine-hook.dll") {
                 hRemoteDll = me.hModule;
                 break;
             }
@@ -228,7 +228,7 @@ void HookManager::stopPipeServer() {
     m_running = false;
     if (m_pipeThread) {
         // Break the blocking ConnectNamedPipe by connecting to the pipe ourselves
-        std::wstring pipeName = L"\\\\.\\pipe\\MakineAI_TextHook_"
+        std::wstring pipeName = L"\\\\.\\pipe\\Makine_TextHook_"
                                 + std::to_wstring(m_targetPid);
         HANDLE hDummy = CreateFileW(pipeName.c_str(), GENERIC_READ | GENERIC_WRITE,
                                      0, nullptr, OPEN_EXISTING, 0, nullptr);
@@ -242,7 +242,7 @@ void HookManager::stopPipeServer() {
 }
 
 void HookManager::pipeThreadFunc() {
-    std::wstring pipeName = L"\\\\.\\pipe\\MakineAI_TextHook_"
+    std::wstring pipeName = L"\\\\.\\pipe\\Makine_TextHook_"
                             + std::to_wstring(m_targetPid);
 
     while (m_running) {
@@ -329,7 +329,7 @@ std::wstring HookManager::resolveHookDllPath() const {
     auto lastSlash = path.find_last_of(L"\\/");
     if (lastSlash == std::wstring::npos) return {};
 
-    return path.substr(0, lastSlash + 1) + L"makineai-hook.dll";
+    return path.substr(0, lastSlash + 1) + L"makine-hook.dll";
 }
 
 } // namespace texthook

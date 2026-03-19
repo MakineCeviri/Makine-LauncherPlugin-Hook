@@ -1,19 +1,19 @@
 /**
  * @file renpy_rpa.hpp
  * @brief Ren'Py RPA archive format structures
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #pragma once
 
-#include "makineai/error.hpp"
-#include "makineai/types.hpp"
+#include "makine/error.hpp"
+#include "makine/types.hpp"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 enum class RpaVersion {
     V2,
@@ -46,4 +46,4 @@ struct RpaArchive {
     const RpaIndexEntry& entry
 );
 
-} // namespace makineai::formats
+} // namespace makine::formats

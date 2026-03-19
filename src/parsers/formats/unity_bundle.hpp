@@ -1,7 +1,7 @@
 /**
  * @file unity_bundle.hpp
  * @brief Unity AssetBundle format structures
- * @copyright (c) 2026 MakineAI Team
+ * @copyright (c) 2026 Makine Team
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <string>
 
-namespace makineai::formats {
+namespace makine::formats {
 
 // Unity magic strings
 constexpr const char* kUnityFSMagic  = "UnityFS";
@@ -63,4 +63,4 @@ struct UnityNode {
     }
 };
 
-} // namespace makineai::formats
+} // namespace makine::formats

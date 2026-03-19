@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace makineai {
+namespace makine {
 
 namespace fs = std::filesystem;
 using StringList = std::vector<std::string>;
@@ -36,4 +36,4 @@ struct TranslationEntry {
     uint32_t length{0};
 };
 
-} // namespace makineai
+} // namespace makine
