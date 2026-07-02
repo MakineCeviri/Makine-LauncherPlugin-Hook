@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (c) 2026 Makine Çeviri. Commons Clause applies — see LICENSE.
+
 #include "hook_manager.h"
 
 #include <tlhelp32.h>

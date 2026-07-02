@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (c) 2026 Makine Çeviri. Commons Clause applies — see LICENSE.
+
 /**
  * @file gamemaker_data_parser.cpp
  * @brief GameMaker Studio data.win parser implementation

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (c) 2026 Makine Çeviri. Commons Clause applies — see LICENSE.
+
 #include "makine/plugin/plugin_api.h"
 #include "hooking/hook_manager.h"
 #include "settings.h"

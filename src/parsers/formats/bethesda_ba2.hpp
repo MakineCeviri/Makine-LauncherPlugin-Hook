@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (c) 2026 Makine Çeviri. Commons Clause applies — see LICENSE.
+
 /**
  * @file bethesda_ba2.hpp
  * @brief Bethesda BA2 archive format structures
